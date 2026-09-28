@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShiftPlanner</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <a class="brand" href="#dashboard" aria-label="ShiftPlanner dashboard">
+            <img src="/images/shiftplanner-mark.svg" alt="ShiftPlanner mark">
+            <span>ShiftPlanner</span>
+        </a>
+        <nav aria-label="Main navigation">
+            <a href="#dashboard" data-nav="dashboard">Dashboard</a>
+            <a href="#employees" data-nav="employees">Employees</a>
+            <a href="#shifts" data-nav="shifts">Shifts / Roster</a>
+            <a href="#swaps" data-nav="swaps">Swap Requests</a>
+        </nav>
+    </header>
+
+    <main>
+        <p id="message" class="message" role="status" aria-live="polite"></p>
+
+        <section id="dashboard" class="view">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">MANAGER VIEW</p>
+                    <h1>Dashboard</h1>
+                </div>
+                <button type="button" class="button secondary" data-refresh>Refresh</button>
+            </div>
+            <div class="summary-grid">
+                <div class="summary"><span>Employees</span><strong id="employee-count">0</strong></div>
+                <div class="summary"><span>Shifts</span><strong id="shift-count">0</strong></div>
+                <div class="summary"><span>Pending swaps</span><strong id="swap-count">0</strong></div>
+            </div>
+            <h2>Requests needing attention</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shift</th>
+                            <th>Requested by</th>
+                            <th>Colleague</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-requests"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="employees" class="view" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">PEOPLE</p>
+                    <h1>Employees</h1>
+                </div>
+            </div>
+            <form id="employee-form" class="form-grid">
+                <input type="hidden" name="id">
+                <label>Name<input name="name" required maxlength="120"></label>
+                <label>Email<input name="email" type="email" required maxlength="180" aria-describedby="email-error"><small id="email-error" class="field-error" aria-live="polite"></small></label>
+                <label>Address<input name="address" maxlength="255"></label>
+                <label>Department<input name="department" maxlength="100"></label>
+                <label>Employee Type<select name="employmentType"><option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Casual</option></select></label>
+                <label>Gender<select name="gender"><option value="">Select</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select></label>
+                <label>Maximum Working Hours<input name="maxHours" type="number" min="1" max="168" value="40" required></label>
+                <label>Role<input name="role" maxlength="100"></label>
+                <label>Status<select name="status"><option>Active</option><option>Inactive</option></select></label>
+                <label class="wide">Notes<textarea name="notes" rows="2" maxlength="1000"></textarea></label>
+                <div class="form-actions wide"><button id="employee-submit" class="button" type="submit">Add Employee</button><button class="button secondary" type="reset">Clear</button></div>
+            </form>
+            <h2>Employee list</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Type</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-list"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="shifts" class="view" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">SCHEDULE</p>
+                    <h1>Shifts / Weekly Roster</h1>
+                </div>
+            </div>
+            <form id="shift-form" class="form-grid">
+                <input type="hidden" name="id">
+                <label>Employee<select name="employeeId" required></select></label>
+                <label>Shift date<input name="date" type="date" required></label>
+                <label>Start time<input name="startTime" type="time" required></label>
+                <label>End time<input name="endTime" type="time" required></label>
+                <label>Shift type<select name="shiftType"><option>DAY</option><option>MORNING</option><option>AFTERNOON</option><option>NIGHT</option></select></label>
+                <label class="wide">Notes<input name="notes" maxlength="500"></label>
+                <div class="form-actions wide"><button id="shift-submit" class="button" type="submit">Add Shift</button><button class="button secondary" type="reset">Clear</button></div>
+            </form>
+            <div class="section-heading roster-heading">
+                <h2>Weekly roster</h2><label class="week-picker">Week of<input id="week-start" type="date"></label></div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Employee</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shift-list"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="swaps" class="view" hidden>
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">SHIFT HANDOVER</p>
+                    <h1>Swap Requests</h1>
+                </div>
+            </div>
+            <form id="swap-form" class="form-grid">
+                <label>Requesting employee<select name="requesterId" required></select></label>
+                <label>Shift to offer<select name="shiftId" required></select></label>
+                <label>Colleague<select name="colleagueId" required></select></label>
+                <label>Reason<input name="reason" maxlength="500"></label>
+                <div class="form-actions wide"><button class="button" type="submit">Create Request</button></div>
+            </form>
+            <h2>All requests</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Shift</th>
+                            <th>Requesting employee</th>
+                            <th>Colleague</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="swap-list"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+    <footer>ShiftPlanner <span>·</span> Workforce schedule</footer>
+</body>
+
+</html>

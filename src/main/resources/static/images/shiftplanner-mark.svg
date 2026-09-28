@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="ShiftPlanner logo placeholder">
+  <rect x="1" y="1" width="38" height="38" fill="#fff" stroke="#111" stroke-width="2"/>
+  <path d="M9 12h22M9 20h22M9 28h22" stroke="#111" stroke-width="2"/>
+  <path d="M15 8v24M25 8v24" stroke="#777" stroke-width="1"/>
+</svg>
